@@ -1,5 +1,5 @@
-import AuthBranding from "@/components/AuthBranding";
-import SignupForm from "./components/SignupForm";
+import AuthBranding from "@/components/auth/AuthBranding";
+import AuthForm from "@/components/auth/AuthForm";
 
 export default function Signup() {
     return (
@@ -13,7 +13,7 @@ export default function Signup() {
             />
             {/* Signup Form */}
             <div className="flex-1 flex items-center justify-center p-8">
-                <SignupForm />
+                <AuthForm isSignUp={true} />
             </div>
         </div>
     );
