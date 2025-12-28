@@ -5,6 +5,7 @@ import { LayoutDashboard, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import GooeyNav from "./GooeyNav";
 
 const navLinks = [
     { name: "Home", href: "/" },
@@ -51,15 +52,16 @@ const Navbar = () => {
                         aria-label="Main navigation"
                         className="hidden md:flex items-center gap-6"
                     >
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
+                        <GooeyNav
+                            items={navLinks}
+                            particleCount={15}
+                            particleDistances={[90, 10]}
+                            particleR={100}
+                            initialActiveIndex={0}
+                            animationTime={600}
+                            timeVariance={300}
+                            colors={[1, 2, 3, 1, 2, 3, 1, 4]}
+                        />
                     </nav>
 
                     {/* Actions */}
