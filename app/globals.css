@@ -88,6 +88,10 @@
   --warning: hsl(36 95% 52%);
   --critical: hsl(0 82% 58%);
 
+  --success-foreground: hsl(0 0% 100%);
+  --warning-foreground: hsl(220 25% 10%);
+  --critical-foreground: hsl(0 0% 100%);
+
   --border: hsl(220 18% 88%);
   --input: hsl(220 18% 88%);
   --ring: hsl(168 80% 32%);
@@ -150,6 +154,9 @@
   --success: hsl(152 62% 44%);
   --warning: hsl(36 88% 48%);
   --critical: hsl(0 72% 52%);
+  --success-foreground: hsl(220 15% 96%);
+  --warning-foreground: hsl(220 15% 96%);
+  --critical-foreground: hsl(220 15% 96%);
 
   --border: hsl(220 18% 18%);
   --input: hsl(220 18% 18%);
