@@ -65,7 +65,6 @@ const HeroSection = () => {
 
             {/* Gradient line decorations */}
             <div className="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-            <div className="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
 
             <div className="container mx-auto px-6 relative z-10 pt-20">
                 <div className="max-w-5xl mx-auto text-center">
@@ -209,12 +208,6 @@ const HeroSection = () => {
                 </div>
             </div>
 
-            {/* Scroll indicator */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-                <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2">
-                    <div className="w-1.5 h-2.5 bg-muted-foreground/50 rounded-full animate-[scroll_1.5s_ease-in-out_infinite]" />
-                </div>
-            </div>
         </section>
     );
 };

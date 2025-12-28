@@ -103,8 +103,8 @@ const StatsSection = () => {
                 <div
                     className="absolute inset-0"
                     style={{
-                        backgroundImage: `linear-gradient(hsl(var(--sidebar-primary)) 1px, transparent 1px),
-                           linear-gradient(90deg, hsl(var(--sidebar-primary)) 1px, transparent 1px)`,
+                        backgroundImage: `linear-gradient(hsl(168 65% 54%) 1px, transparent 1px),
+                           linear-gradient(90deg, hsl(168 65% 54%) 1px, transparent 1px)`,
                         backgroundSize: "50px 50px",
                     }}
                 />
