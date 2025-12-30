@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Activity } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 
 const AuthBranding = ({
@@ -21,7 +21,7 @@ const AuthBranding = ({
                 <div className="flex items-center gap-3 mb-16">
                     <Link href={"/"}>
                         <div className="w-12 h-12 rounded-xl bg-sidebar-primary flex items-center justify-center">
-                            <Activity className="w-6 h-6 text-sidebar-primary-foreground" />
+                            <LayoutDashboard className="w-6 h-6 text-sidebar-primary-foreground" />
                         </div>
                     </Link>
                     <div>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import GooeyNav from "./GooeyNav";
+import { useAuth } from "@clerk/nextjs";
 
 const navLinks = [
     { name: "Home", href: "/" },
@@ -18,7 +19,7 @@ const navLinks = [
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
-
+    const { userId, isLoaded } = useAuth();
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20);
         onScroll();
@@ -50,7 +51,7 @@ const Navbar = () => {
                     {/* Desktop Nav */}
                     <nav
                         aria-label="Main navigation"
-                        className="hidden md:flex items-center gap-6"
+                        className="hidden md:flex"
                     >
                         <GooeyNav
                             items={navLinks}
@@ -58,19 +59,20 @@ const Navbar = () => {
                             particleDistances={[90, 10]}
                             particleR={100}
                             initialActiveIndex={0}
-                            animationTime={600}
+                            animationTime={500}
                             timeVariance={300}
-                            colors={[1, 2, 3, 1, 2, 3, 1, 4]}
+                            colors={[1, 2, 3, 4, 5, 6, 1, 4]}
                         />
                     </nav>
 
                     {/* Actions */}
                     <div className="hidden md:flex items-center gap-3">
-                        <Button asChild variant="ghost">
-                            <Link href="/login">Sign In</Link>
-                        </Button>
                         <Button asChild className="hover-glow">
-                            <Link href="/signup">Get Started</Link>
+                            {userId ? (
+                                <Link href="/dashboard">Dashboard</Link>
+                            ) : (
+                                <Link href="/signup">Get Started</Link>
+                            )}
                         </Button>
                     </div>
 
@@ -100,11 +102,12 @@ const Navbar = () => {
                             </Link>
                         ))}
                         <div className="p-4 flex flex-col gap-3">
-                            <Button asChild variant="ghost">
-                                <Link href="/login">Sign In</Link>
-                            </Button>
                             <Button asChild>
-                                <Link href="/signup">Get Started</Link>
+                                {userId ? (
+                                    <Link href="/dashboard">Dashboard</Link>
+                                ) : (
+                                    <Link href="/signup">Get Started</Link>
+                                )}
                             </Button>
                         </div>
                     </nav>

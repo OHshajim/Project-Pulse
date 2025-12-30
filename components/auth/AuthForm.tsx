@@ -11,92 +11,74 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import { ForgotPasswordDialog } from "@/app/login/components/ForgotPasswordDialog";
-import { z } from "zod";
 // import { toast } from "@/hooks/use-toast";
-import { Login, Register } from "@/lib/auth";
 import Roles from "./Roles";
-
-/* -------------------- VALIDATION -------------------- */
-const loginSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    role: z.string(),
-});
-
-const registerSchema = loginSchema
-    .extend({
-        name: z.string().min(2, "Name is too short"),
-        confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        path: ["confirmPassword"],
-        message: "Passwords do not match",
-    });
+import { ForgotPasswordDialog } from "@/app/(auth)/login/components/ForgotPasswordDialog";
+import { useSignIn, useSignUp } from "@clerk/nextjs";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 /* -------------------- COMPONENT -------------------- */
 const AuthForm = ({ isSignUp }: { isSignUp: boolean }) => {
+    const { signIn, isLoaded } = useSignIn();
+    const { signUp ,isLoaded: signUpLoading} = useSignUp();
+
     const [form, setForm] = useState({
         name: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
-
     const [selectedRole, setSelectedRole] = useState("employee");
     const [isLoading, setIsLoading] = useState(false);
-
+    
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
     };
-
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-
+        const email = form.email.trim().toLowerCase();
         try {
-            const payload = {
-                ...form,
-                role: selectedRole,
-            };
-
             if (isSignUp) {
-                const validated = registerSchema.parse(payload);
-                await Register(validated);
-
-                // toast({
-                //     title: "Account created 🎉",
-                //     description: "Welcome to ProjectPulse",
-                // });
+                if (!signUpLoading) return;
+                const result = await signUp.create({
+                    emailAddress: email,
+                    password: form.password,
+                    unsafeMetadata: {
+                        role: selectedRole,
+                        name: form.name,
+                    },
+                });
+                 if (result.status === "complete") {
+                     toast.success("Account created 🎉");
+                     redirect("/dashboard");
+                 } else {
+                     console.log("Additional step required:", result);
+                 }
             } else {
-                const validated = loginSchema.parse(payload);
-                await Login(validated);
+                if (!isLoaded) return;
+                console.log("Email being sent to Clerk:", email);
+                const result = await signIn.create({
+                    identifier: email,
+                    password: form.password,
+                });
 
-                // toast({
-                //     title: "Welcome back 👋",
-                //     description: `Signed in as ${selectedRole}`,
-                // });
+                if (result.status === "complete") {
+                    toast.success("Welcome to Project Pulse 🎉");
+                    redirect("/dashboard");
+                } else {
+                    console.log("Additional step required:", result);
+                }
             }
 
-            // router.push("/dashboard");
         } catch (err: any) {
-            if (err.name === "ZodError") {
-                // toast({
-                //     title: "Invalid input",
-                //     description: err.errors[0].message,
-                //     variant: "destructive",
-                // });
-            } else {
-                // toast({
-                //     title: "Something went wrong",
-                //     description: "Please try again",
-                //     variant: "destructive",
-                // });
-            }
+            console.log(err);
+            console.log(err.errors?.[0]);
         } finally {
             setIsLoading(false);
         }
@@ -105,22 +87,18 @@ const AuthForm = ({ isSignUp }: { isSignUp: boolean }) => {
     return (
         <div className="w-full max-w-md animate-fade-in">
             {/* Mobile Logo */}
-            <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-                <Image
-                    src="/logo.png"
-                    alt="ProjectPulse"
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                />
-                <h1 className="font-bold text-xl">ProjectPulse</h1>
-            </div>
-
             <Card className="border-0 shadow-elevated">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl">
                         {isSignUp ? "Create account" : "Welcome back"}
                     </CardTitle>
+                    <Link
+                        href={"/"}
+                        className="lg:hidden flex items-center gap-3 py-2 justify-center"
+                    >
+                        <LayoutDashboard className="w-6 h-6 text-sidebar-primary-foreground" />
+                        <h1 className="font-bold text-2xl">ProjectPulse</h1>
+                    </Link>
                     <CardDescription>
                         {isSignUp
                             ? "Sign up to get started with ProjectPulse"
@@ -130,11 +108,12 @@ const AuthForm = ({ isSignUp }: { isSignUp: boolean }) => {
 
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        <Roles
-                            selectedRole={selectedRole}
-                            setSelectedRole={setSelectedRole}
-                        />
-
+                        {isSignUp && (
+                            <Roles
+                                selectedRole={selectedRole}
+                                setSelectedRole={setSelectedRole}
+                            />
+                        )}
                         {isSignUp && (
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>

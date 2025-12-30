@@ -125,7 +125,7 @@ const HeroSection = () => {
                             className="px-8 py-7 text-lg font-semibold hover:bg-accent group border-2 transition-all duration-300"
                         >
                             <Link
-                                href="/login"
+                                href="/resources"
                                 className="flex items-center gap-2"
                             >
                                 <Play className="w-5 h-5 text-primary" />
@@ -207,7 +207,6 @@ const HeroSection = () => {
                     </div>
                 </div>
             </div>
-
         </section>
     );
 };
