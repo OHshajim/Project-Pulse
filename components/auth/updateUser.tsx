@@ -44,9 +44,7 @@ export function UpdateUserDialog({
             alert("All fields are required");
             return;
         }
-
         setIsLoading(true);
-
         try {
             const res = await postUserData({
                 email,
