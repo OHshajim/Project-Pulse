@@ -6,7 +6,7 @@ export const getUserData = async(id : string)=>{
 }
 export const updateUserData = async({id,data})=>{
     const res = await API.put(`api/admin/user/${id}`,data)
-    return res.data
+    return res
 }
 export const postUserData = async(data)=>{
     const res = await API.post(`api/admin/user`,data)

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { postUserData } from "@/data/userData";
+import { updateUserData } from "@/data/userData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import Roles from "./Roles";
+import { toast } from "sonner";
 
 interface AddUserDialogProps {
     trigger: React.ReactNode;
@@ -41,27 +42,29 @@ export function UpdateUserDialog({
         e.preventDefault();
 
         if (!email || !role || !password || !name) {
-            alert("All fields are required");
+            toast.error("All fields are required");
             return;
         }
         setIsLoading(true);
         try {
-            const res = await postUserData({
-                email,
-                role,
-                name,
-                password,
-                createdBy: user?.id || "SYSTEM",
+            const res = await updateUserData({
+                id: userData.id,
+                data:{
+                    email,
+                    role,
+                    name,
+                    password,
+                    createdBy: user?.id || "SYSTEM"
+                }
             });
-            if (res.user) {
+            if (res.status === 200) {
                 setIsSuccess(true);
                 if (onUserAdded) onUserAdded();
             } else {
-                alert("Failed to create user");
+                toast.error("Failed to update user");
             }
         } catch (err: any) {
             console.error(err);
-            alert(err?.response?.data?.error || "Something went wrong");
         } finally {
             setIsLoading(false);
         }
