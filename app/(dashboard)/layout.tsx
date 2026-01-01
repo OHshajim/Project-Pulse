@@ -8,13 +8,13 @@ export default function MarketingLayout({
     }: {
         children: React.ReactNode;
     }) {
-        const { userId, isLoaded } = useAuth();
-        if (!userId && isLoaded) redirect("/login");
+        const { isSignedIn } = useAuth();
+        if (!isSignedIn) redirect("/login");
         return (
             <div className="min-h-screen bg-background">
                 <Sidebar />
                 <main className="pl-64">
-                    <div className="p-8 max-w-[1600px] mx-auto">
+                    <div className="p-8 max-w-400 mx-auto">
                         <div className="animate-fade-in">{children}</div>
                     </div>
                 </main>

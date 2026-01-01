@@ -19,7 +19,8 @@ const navLinks = [
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
-    const { userId, isLoaded } = useAuth();
+    const { isSignedIn } = useAuth();
+
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20);
         onScroll();
@@ -68,7 +69,7 @@ const Navbar = () => {
                     {/* Actions */}
                     <div className="hidden md:flex items-center gap-3">
                         <Button asChild className="hover-glow">
-                            {userId ? (
+                            {isSignedIn ? (
                                 <Link href="/dashboard">Dashboard</Link>
                             ) : (
                                 <Link href="/signup">Get Started</Link>
@@ -103,7 +104,7 @@ const Navbar = () => {
                         ))}
                         <div className="p-4 flex flex-col gap-3">
                             <Button asChild>
-                                {userId ? (
+                                {isSignedIn ? (
                                     <Link href="/dashboard">Dashboard</Link>
                                 ) : (
                                     <Link href="/signup">Get Started</Link>
