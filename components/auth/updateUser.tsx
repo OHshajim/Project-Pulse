@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { postUserData } from "@/data/userData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,8 +15,6 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { ArrowRight, CheckCircle } from "lucide-react";
-import { postUserData } from "@/data/userData";
-import { useUser } from "@clerk/nextjs";
 import Roles from "./Roles";
 
 interface AddUserDialogProps {
