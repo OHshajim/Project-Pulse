@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "employee" | "client";
+export type UserRole = "ADMIN" | "EMPLOYEE" | "CLIENT";
 
 export type ProjectStatus = "on-track" | "at-risk" | "critical" | "completed";
 

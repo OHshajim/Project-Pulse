@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useSignIn } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,26 +14,18 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { ArrowRight, LayoutDashboard } from "lucide-react";
-import Link from "next/link";
-// import { toast } from "@/hooks/use-toast";
-import Roles from "./Roles";
 import { ForgotPasswordDialog } from "@/app/(auth)/login/components/ForgotPasswordDialog";
-import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import API from "@/hooks/useAxios";
 
-/* -------------------- COMPONENT -------------------- */
 const AuthForm = ({ isSignUp }: { isSignUp: boolean }) => {
-    const { signIn, isLoaded } = useSignIn();
-    const { signUp ,isLoaded: signUpLoading} = useSignUp();
-
+    const { signIn, isLoaded ,setActive} = useSignIn();
     const [form, setForm] = useState({
         name: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
-    const [selectedRole, setSelectedRole] = useState("employee");
     const [isLoading, setIsLoading] = useState(false);
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,44 +35,71 @@ const AuthForm = ({ isSignUp }: { isSignUp: boolean }) => {
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
+        // Add password validation for sign-up
+        if (isSignUp && form.password !== form.confirmPassword) {
+            toast.error("Passwords do not match");
+            setIsLoading(false);
+            return;
+        }
+
+        // Add password strength validation
+        if (isSignUp && form.password.length < 8) {
+            toast.error("Password must be at least 8 characters");
+            setIsLoading(false);
+            return;
+        }
         const email = form.email.trim().toLowerCase();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (!emailRegex.test(email)) {
+            toast.error("Please enter a valid email address");
+            setIsLoading(false);
+            return;
+        }
+
+        setIsLoading(true);
+        
+        if (!isLoaded || !signIn) return;
         try {
             if (isSignUp) {
-                if (!signUpLoading) return;
-                const result = await signUp.create({
-                    emailAddress: email,
+                const res = await API.post('/api/admin/signUp', {
+                    name: form.name,
+                    email: email,
                     password: form.password,
-                    unsafeMetadata: {
-                        role: selectedRole,
-                        name: form.name,
-                    },
                 });
-                 if (result.status === "complete") {
-                     toast.success("Account created 🎉");
-                     redirect("/dashboard");
-                 } else {
-                     console.log("Additional step required:", result);
-                 }
+                if (res.status !== 201) {
+                    toast.error("Admin signup failed");
+                    return;
+                }
+
+                // 2️⃣ Sign in immediately
+                const result = await signIn.create({
+                    identifier: email,
+                    password : form.password,
+                });
+
+                await setActive({
+                    session: result.createdSessionId,
+                });
+                toast.success("Admin logged in 🎉");
+                window.location.href = "/dashboard";
             } else {
-                if (!isLoaded) return;
-                console.log("Email being sent to Clerk:", email);
                 const result = await signIn.create({
                     identifier: email,
                     password: form.password,
                 });
 
                 if (result.status === "complete") {
+                    await setActive({ session: result.createdSessionId });
                     toast.success("Welcome to Project Pulse 🎉");
-                    redirect("/dashboard");
+                    window.location.href = "/dashboard";
                 } else {
                     console.log("Additional step required:", result);
                 }
             }
-
         } catch (err: any) {
-            console.log(err);
-            console.log(err.errors?.[0]);
+        const errorMessage = err.errors?.[0]?.message || "Authentication failed";
+        toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -108,12 +129,6 @@ const AuthForm = ({ isSignUp }: { isSignUp: boolean }) => {
 
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        {isSignUp && (
-                            <Roles
-                                selectedRole={selectedRole}
-                                setSelectedRole={setSelectedRole}
-                            />
-                        )}
                         {isSignUp && (
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>
@@ -206,7 +221,7 @@ const AuthForm = ({ isSignUp }: { isSignUp: boolean }) => {
                                 <>
                                     {isSignUp
                                         ? "Create account"
-                                        : `Sign in as ${selectedRole}`}
+                                        : `Sign in`}
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </>
                             )}

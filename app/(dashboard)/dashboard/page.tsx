@@ -1,4 +1,6 @@
 "use client"
+import { AdminDashboard } from "@/components/dashboard/AdminDashboard";
+import { ClientDashboard } from "@/components/dashboard/ClientDashboard";
 import { EmployeeDashboard } from "@/components/dashboard/EmployeeDashboard";
 import { useUser } from "@clerk/nextjs";
 
@@ -7,11 +9,11 @@ export default function Dashboard() {
     const renderDashboard = () => {
         switch (user?.unsafeMetadata.role) {
             case "admin":
-                return < ></>;
+                return <AdminDashboard />;
             case "employee":
                 return <EmployeeDashboard />;
             case "client":
-                return <></>;
+                return <ClientDashboard />;
             default:
                 return null;
         }

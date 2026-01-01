@@ -74,7 +74,7 @@ const IntegrationsSection = () => {
                 </div>
 
                 {/* Integration Icons - Floating Grid */}
-                <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto">
+                <div className="flex flex-wrap justify-center gap-6 mx-auto px-4">
                     {integrations.map((item, index) => (
                         <div
                             key={index}

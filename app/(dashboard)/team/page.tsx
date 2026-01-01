@@ -1,3 +1,4 @@
+"use client";
 import { mockUsers, mockProjects } from "@/data/mockData";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,25 +10,27 @@ import {
     Shield,
     Briefcase,
     Users,
+    Pen,
+    Trash,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
+import { deleteUserData, getUserData } from "@/data/userData";
+import { AddUserDialog } from "@/components/auth/AddUser";
+import { User } from "@/types";
+import { UpdateUserDialog } from "@/components/auth/updateUser";
 
 export default function Team() {
     const { user } = useUser();
-
-    // Only admins can access this page
-    if (user?.unsafeMetadata.role !== "admin") {
-        return redirect("/dashboard")
-    }
+    const [users, setUsers]= useState<User[]>([]);
 
     const getRoleIcon = (role: string) => {
         switch (role) {
-            case "admin":
+            case "ADMIN":
                 return Shield;
-            case "employee":
+            case "EMPLOYEE":
                 return Briefcase;
-            case "client":
+            case "CLIENT":
                 return Users;
             default:
                 return Users;
@@ -48,19 +51,23 @@ export default function Team() {
     };
 
     const getProjectCount = (userId: string, role: string) => {
-        if (role === "client") {
+        if (role === "CLIENT") {
             return mockProjects.filter((p) => p.clientId === userId).length;
         }
-        if (role === "employee") {
+        if (role === "EMPLOYEE") {
             return mockProjects.filter((p) => p.employeeIds.includes(userId))
                 .length;
         }
         return mockProjects.length;
     };
+    const DeleteUser = async (userId: string) => {
+        await deleteUserData(userId);
+        loadUsers();
 
-    const admins = mockUsers.filter((u) => u.role === "admin");
-    const employees = mockUsers.filter((u) => u.role === "employee");
-    const clients = mockUsers.filter((u) => u.role === "client");
+    }
+
+    const employees = users.filter((u) => u.role === "EMPLOYEE");
+    const clients = users.filter((u) => u.role === "CLIENT");
 
     const UserCard = ({ member }: { member: (typeof mockUsers)[0] }) => {
         const Icon = getRoleIcon(member.role);
@@ -68,23 +75,43 @@ export default function Team() {
 
         return (
             <Card className="animate-fade-in hover:shadow-medium transition-all duration-200">
-                <CardContent className="pt-6">
+                <CardContent>
                     <div className="flex items-start gap-4">
                         <div className="w-12 h-12 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center text-lg">
                             {member.avatar}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-semibold truncate">
-                                    {member.name}
-                                </h3>
-                                <Badge
-                                    variant={getRoleBadgeVariant(member.role)}
-                                    className="capitalize text-[10px]"
-                                >
-                                    <Icon className="w-3 h-3 mr-1" />
-                                    {member.role}
-                                </Badge>
+                            <div className="flex items-center gap-2 justify-between">
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-semibold truncate">
+                                        {member.name}
+                                    </h3>
+                                    <Badge
+                                        variant={getRoleBadgeVariant(
+                                            member.role
+                                        )}
+                                        className="capitalize text-[10px]"
+                                    >
+                                        <Icon className="w-3 h-3 mr-1" />
+                                        {member.role}
+                                    </Badge>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <UpdateUserDialog
+                                        trigger={
+                                            <Button>
+                                                <Pen />
+                                            </Button>
+                                        }
+                                        onUserAdded={loadUsers}
+                                        userData={member}
+                                    />
+                                    <Button
+                                        onClick={() => DeleteUser(member.id)}
+                                    >
+                                        <Trash />
+                                    </Button>
+                                </div>
                             </div>
                             <p className="text-sm text-muted-foreground flex items-center gap-1">
                                 <Mail className="w-3 h-3" />
@@ -104,6 +131,16 @@ export default function Team() {
         );
     };
 
+    const loadUsers = async () => {
+        const fetchedUsers = await getUserData(user?.id ?? "");
+        console.log(fetchedUsers);
+        setUsers(fetchedUsers.users);
+    };
+
+    useEffect(() => {
+        loadUsers();
+    }, [user?.id]);
+
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
@@ -113,25 +150,15 @@ export default function Team() {
                         {mockUsers.length} team members across all roles
                     </p>
                 </div>
-                <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Member
-                </Button>
-            </div>
-            {/* Admins */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-primary" />
-                    <h2 className="text-xl font-semibold">
-                        Administrators
-                    </h2>
-                    <Badge variant="muted">{admins.length}</Badge>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {admins.map((member) => (
-                        <UserCard key={member.id} member={member} />
-                    ))}
-                </div>
+                <AddUserDialog
+                    trigger={
+                        <Button>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Member
+                        </Button>
+                    }
+                    onUserAdded={loadUsers}
+                />
             </div>
             {/* Employees */}
             <div className="space-y-4">
@@ -140,7 +167,7 @@ export default function Team() {
                     <h2 className="text-xl font-semibold">Employees</h2>
                     <Badge variant="muted">{employees.length}</Badge>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {employees.map((member) => (
                         <UserCard key={member.id} member={member} />
                     ))}
@@ -153,7 +180,7 @@ export default function Team() {
                     <h2 className="text-xl font-semibold">Clients</h2>
                     <Badge variant="muted">{clients.length}</Badge>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {clients.map((member) => (
                         <UserCard key={member.id} member={member} />
                     ))}

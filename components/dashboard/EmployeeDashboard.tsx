@@ -15,7 +15,7 @@ import { ProjectCard } from "../ProjectCard";
 
 export function EmployeeDashboard() {
     const { user } = useUser();
-    const myProjects = getProjectsForUser(user?.id || "", "employee");
+    const myProjects = getProjectsForUser("2", "employee");
     const myRisks = mockRisks.filter((r) =>
         myProjects.some((p) => p.id === r.projectId)
     );
@@ -29,7 +29,7 @@ export function EmployeeDashboard() {
                 !mockCheckIns.some(
                     (c) =>
                         c.projectId === p.id &&
-                        c.employeeId === user?.id &&
+                        c.employeeId === "2" &&
                         c.weekOf === "2024-03-18"
                 )
         );
@@ -43,10 +43,6 @@ export function EmployeeDashboard() {
                         Track your projects and pending tasks
                     </p>
                 </div>
-                <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Check-in
-                </Button>
             </div>
 
             {/* Stats Grid */}

@@ -2,37 +2,15 @@ import mongoose, { Schema, models } from "mongoose";
 
 const UserSchema = new Schema(
     {
-        name: {
-            type: String,
-            required: true,
-            trim: true,
-            minlength: 2,
-        },
-        email: {
-            type: String,
-            required: true,
-            unique: true,
-            lowercase: true,
-            index: true,
-        },
-        password: {
-            type: String,
-            required: true,
-            select: false,
-        },
+        clerkId: { type: String, required: true, unique: true },
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
         role: {
             type: String,
-            enum: ["employee", "admin", "client"],
-            default: "client",
+            enum: ["ADMIN", "EMPLOYEE", "CLIENT"],
+            required: true,
         },
-
-        resetPasswordOtp: {
-            type: Number,
-        },
-
-        resetPasswordOtpExpires: {
-            type: Date,
-        },
+        createdBy: { type: String },
     },
     { timestamps: true }
 );

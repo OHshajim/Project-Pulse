@@ -43,11 +43,11 @@ export function Sidebar() {
 
     const getLinks = () => {
         switch (user?.unsafeMetadata.role) {
-            case "admin":
+            case "ADMIN":
                 return adminLinks;
-            case "employee":
+            case "EMPLOYEE":
                 return employeeLinks;
-            case "client":
+            case "CLIENT":
                 return clientLinks;
             default:
                 return [];

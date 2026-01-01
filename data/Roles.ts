@@ -6,19 +6,13 @@ export const roles: {
     description: string;
 }[] = [
     {
-        role: "admin",
-        label: "Admin",
-        icon: Shield,
-        description: "Full system access",
-    },
-    {
-        role: "employee",
+        role: "EMPLOYEE",
         label: "Employee",
         icon: Briefcase,
         description: "Project check-ins & risks",
     },
     {
-        role: "client",
+        role: "CLIENT",
         label: "Client",
         icon: Users,
         description: "View projects & feedback",
