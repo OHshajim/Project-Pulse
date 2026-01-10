@@ -308,10 +308,10 @@ export function getProjectById(id: string): Project | undefined {
 }
 
 export function getProjectsForUser(userId: string, role: string): Project[] {
-    if (role === "admin") return mockProjects;
-    if (role === "client")
+    if (role === "ADMIN") return mockProjects;
+    if (role === "CLIENT")
         return mockProjects.filter((p) => p.clientId === userId);
-    if (role === "employee")
+    if (role === "EMPLOYEE")
         return mockProjects.filter((p) => p.employeeIds.includes(userId));
     return [];
 }

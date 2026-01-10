@@ -8,11 +8,11 @@ export default function Dashboard() {
     const { user } = useUser();
     const renderDashboard = () => {
         switch (user?.unsafeMetadata.role) {
-            case "admin":
+            case "ADMIN":
                 return <AdminDashboard />;
-            case "employee":
+            case "EMPLOYEE":
                 return <EmployeeDashboard />;
-            case "client":
+            case "CLIENT":
                 return <ClientDashboard />;
             default:
                 return null;

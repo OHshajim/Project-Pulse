@@ -6,13 +6,9 @@ import { connectDB } from "@/lib/mongodb";
 
 export async function POST(req: Request) {
     try {
-        // 🔐 Admin only
-
-        
         const body = await req.json();
         const { name, email, password, role, createdBy } = body;
 
-        
         if (!name || !email || !password || !role) {
             return NextResponse.json(
                 { message: "All fields are required" },

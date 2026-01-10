@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, CheckCircle, Clock, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { mockProjects, mockUsers } from "@/data/mockData";
 import { Risk } from "@/types";
 
 interface RiskCardProps {
@@ -10,9 +9,8 @@ interface RiskCardProps {
 }
 
 export function RiskCard({ risk }: RiskCardProps) {
-    const project = mockProjects.find((p) => p.id === risk.projectId);
-    const createdBy = mockUsers.find((u) => u.id === risk.createdBy);
-
+    
+    const {createdBy, projectId: project} = risk;
     const getSeverityVariant = () => {
         switch (risk.severity) {
             case "high":
@@ -42,7 +40,7 @@ export function RiskCard({ risk }: RiskCardProps) {
                     "border-critical/40"
             )}
         >
-            <CardHeader className="pb-3">
+            <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3">
                         <div
@@ -72,7 +70,7 @@ export function RiskCard({ risk }: RiskCardProps) {
                             </p>
                         </div>
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
+                    <div className="flex gap-2 shrink-0">
                         <Badge
                             variant={getSeverityVariant()}
                             className="capitalize"

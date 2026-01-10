@@ -89,6 +89,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
                 const clerkData = await clerk.users.getUser(u.clerkId);
                 return {
                     id: u.clerkId,
+                    dbId: u._id,
                     name: u.name,
                     email: u.email,
                     role: u.role,

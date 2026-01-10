@@ -1,17 +1,15 @@
 export type UserRole = "ADMIN" | "EMPLOYEE" | "CLIENT";
-
 export type ProjectStatus = "on-track" | "at-risk" | "critical" | "completed";
-
 export type RiskSeverity = "low" | "medium" | "high";
-
 export type RiskStatus = "open" | "resolved";
 
 export interface User {
+    dbId: string;
     id: string;
     name: string;
     email: string;
     role: UserRole;
-    avatar?: string;
+    createdBy?: string;
 }
 
 export interface Project {
@@ -52,7 +50,7 @@ export interface ClientFeedback {
 }
 
 export interface Risk {
-    id: string;
+    _id: string;
     projectId: string;
     createdBy: string;
     title: string;

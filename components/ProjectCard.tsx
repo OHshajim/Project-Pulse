@@ -13,10 +13,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, onClick }: ProjectCardProps) {
-    const client = mockUsers.find((u) => u.id === project.clientId);
-    const employees = project.employeeIds
-        .map((id) => mockUsers.find((u) => u.id === id))
-        .filter(Boolean);
+    const {employeeIds: employees, clientId: client} = project;
 
     const getStatusBadgeVariant = () => {
         switch (project.status) {
@@ -37,13 +34,12 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
             day: "numeric",
         });
     };
-
     return (
         <Card
             className={cn(
                 "group cursor-pointer hover-lift overflow-hidden",
                 project.status === "critical" &&
-                    "border-critical/40 bg-critical/[0.02]"
+                    "border-critical/40 bg-critical/20"
             )}
             onClick={onClick}
         >
@@ -55,7 +51,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                                 {project.name}
                             </h3>
                             {project.status === "critical" && (
-                                <AlertTriangle className="w-4 h-4 text-critical animate-pulse-subtle flex-shrink-0" />
+                                <AlertTriangle className="w-4 h-4 text-critical animate-pulse-subtle shrink-0" />
                             )}
                             <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-auto flex-shrink-0" />
                         </div>
@@ -97,37 +93,49 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                     <Progress value={project.progress} className="h-2" />
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                <div className="pt-3 border-t border-border/50 space-y-2">
+                    {/* Client */}
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
-                            Client:
+                        <span className="text-xs text-muted-foreground w-12">
+                            Client
                         </span>
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary text-[10px] font-bold flex items-center justify-center">
-                                {client?.avatar}
+
+                        <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-md bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center">
+                                {client?.name?.[0]?.toUpperCase()}
                             </div>
-                            <span className="text-xs font-medium">
+
+                            <span className="text-sm font-medium leading-none">
                                 {client?.name}
                             </span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5 text-muted-foreground" />
-                        <div className="flex -space-x-1.5">
-                            {employees.slice(0, 3).map((emp) => (
-                                <div
-                                    key={emp?.id}
-                                    className="w-6 h-6 rounded-lg bg-secondary text-secondary-foreground text-[10px] font-bold flex items-center justify-center border-2 border-background"
-                                    title={emp?.name}
-                                >
-                                    {emp?.avatar}
-                                </div>
-                            ))}
-                            {employees.length > 3 && (
-                                <div className="w-6 h-6 rounded-lg bg-muted text-muted-foreground text-[10px] font-bold flex items-center justify-center border-2 border-background">
-                                    +{employees.length - 3}
-                                </div>
-                            )}
+
+                    {/* Team */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground w-12">
+                            Team
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-muted-foreground" />
+                            <div className="flex -space-x-2">
+                                {employees.slice(0, 3).map((emp, index) => (
+                                    <div
+                                        key={index}
+                                        className="w-7 h-7 rounded-md bg-secondary text-secondary-foreground text-xs font-semibold flex items-center justify-center border-2 border-background hover:z-10"
+                                        title={emp.name}
+                                    >
+                                        {emp.name?.[0]?.toUpperCase()}
+                                    </div>
+                                ))}
+
+                                {employees.length > 3 && (
+                                    <div className="w-7 h-7 rounded-md bg-muted text-muted-foreground text-xs font-semibold flex items-center justify-center border-2 border-background">
+                                        +{employees.length - 3}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -144,11 +144,8 @@ export function AdminDashboard() {
                             At Risk Projects
                         </h3>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {atRiskProjects.map((project) => (
-                                <ProjectCard
-                                    key={project.id}
-                                    project={project}
-                                />
+                            {atRiskProjects.map((project, index) => (
+                                <ProjectCard key={index} project={project} />
                             ))}
                         </div>
                     </div>

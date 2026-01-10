@@ -51,7 +51,7 @@ export const UserCard = ({ member, loadUsers }: { member: (typeof mockUsers)[0] 
             <CardContent>
                 <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center text-lg">
-                        {member.avatar}
+                        {member.name[0].toLocaleUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 justify-between">

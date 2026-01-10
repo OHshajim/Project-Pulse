@@ -1,5 +1,4 @@
 import { Activity } from "@/types";
-import { mockUsers } from "@/data/mockData";
 import {
     ClipboardCheck,
     MessageSquare,
@@ -65,7 +64,6 @@ export function ActivityTimeline({ activities }: ActivityTimelineProps) {
         <div className="space-y-1">
             {activities.map((activity, index) => {
                 const Icon = getActivityIcon(activity.type);
-                const user = mockUsers.find((u) => u.id === activity.userId);
                 const isLast = index === activities.length - 1;
 
                 return (

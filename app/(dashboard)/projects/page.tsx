@@ -1,22 +1,38 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProjectCard } from "@/components/ProjectCard";
-import { getProjectsForUser } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
+import { AddProjectDialog } from "@/components/projects/AddProject";
+import { getAllProjects } from "@/data/projectData";
+import { getUserData } from "@/data/userData";
 
 export default function Projects() {
     const { user } = useUser();
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<string>("all");
+    const [allProjects, setProjects] = useState([]);
+    const [users, setUsers]= useState([]);
+    const employees = users.filter((u) => u?.role === "EMPLOYEE");
+    const clients = users.filter((u) => u?.role === "CLIENT");
 
-    const allProjects = getProjectsForUser(
-        user?.id || "",
-        user?.unsafeMetadata.role || "employee"
-    );
+    const loadProjects = async () => {
+        const { projects } = await getAllProjects(user?.id);
+        setProjects(projects??[]);
+    };
+    
+
+    useEffect(() => {
+        loadProjects();
+        const loadUsers = async () => {
+            const fetchedUsers = await getUserData(user?.id ?? "");
+            setUsers(fetchedUsers?.users ?? []);
+        };
+        loadUsers();
+    }, [user]);
 
     const filteredProjects = allProjects.filter((project) => {
         const matchesSearch =
@@ -24,8 +40,7 @@ export default function Projects() {
             project.description
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase());
-        const matchesStatus =
-            statusFilter === "all" || project.status === statusFilter;
+        const matchesStatus = statusFilter === "all" || project.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
 
@@ -36,7 +51,7 @@ export default function Projects() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">
-                        {user?.unsafeMetadata.role === "admin"
+                        {user?.unsafeMetadata.role === "ADMIN"
                             ? "All Projects"
                             : "My Projects"}
                     </h1>
@@ -45,11 +60,18 @@ export default function Projects() {
                         {allProjects.length !== 1 ? "s" : ""} total
                     </p>
                 </div>
-                {user?.unsafeMetadata.role === "admin" && (
-                    <Button>
-                        <Plus className="w-4 h-4 mr-2" />
-                        New Project
-                    </Button>
+                {user?.unsafeMetadata.role === "ADMIN" && (
+                    <AddProjectDialog
+                        trigger={
+                            <Button>
+                                <Plus className="w-4 h-4 mr-2" />
+                                Add Projects
+                            </Button>
+                        }
+                        onProjectAdded={loadProjects}
+                        clients={clients}
+                        employees={employees}
+                    />
                 )}
             </div>
             {/* Filters */}
@@ -94,7 +116,7 @@ export default function Projects() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                     {filteredProjects.map((project, index) => (
                         <div
-                            key={project.id}
+                            key={project?._id}
                             style={{ animationDelay: `${index * 50}ms` }}
                         >
                             <ProjectCard project={project} />

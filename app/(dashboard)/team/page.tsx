@@ -1,5 +1,4 @@
 "use client";
-import { mockUsers } from "@/data/mockData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,12 +21,14 @@ export default function Team() {
 
     const loadUsers = async () => {
         const fetchedUsers = await getUserData(user?.id ?? "");
-        setUsers(fetchedUsers.users);
+        setUsers(fetchedUsers?.users ?? []);
     };
 
     useEffect(() => {
-        loadUsers();
-    }, [user]);
+        if (user?.id) {
+            loadUsers();
+        }
+    }, [user?.id]);
 
     return (
         <div className="space-y-8">
@@ -35,7 +36,7 @@ export default function Team() {
                 <div>
                     <h1 className="text-3xl font-bold">Team Management</h1>
                     <p className="text-muted-foreground mt-1">
-                        {mockUsers.length} team members across all roles
+                        {users.length} team members across all roles
                     </p>
                 </div>
                 <AddUserDialog
@@ -58,7 +59,11 @@ export default function Team() {
                 {employees.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {employees.map((member) => (
-                            <UserCard key={member.id} member={member} loadUsers={loadUsers} />
+                            <UserCard
+                                key={member.id}
+                                member={member}
+                                loadUsers={loadUsers}
+                            />
                         ))}
                     </div>
                 ) : (
@@ -72,15 +77,19 @@ export default function Team() {
                     <h2 className="text-xl font-semibold">Clients</h2>
                     <Badge variant="muted">{clients.length}</Badge>
                 </div>
-                {clients.length > 0 ? 
+                {clients.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {clients.map((member) => (
-                            <UserCard key={member.id} member={member} loadUsers={loadUsers} />
+                            <UserCard
+                                key={member.id}
+                                member={member}
+                                loadUsers={loadUsers}
+                            />
                         ))}
                     </div>
-                    :
+                ) : (
                     <p className="text-muted-foreground">No clients found.</p>
-                }
+                )}
             </div>
         </div>
     );
