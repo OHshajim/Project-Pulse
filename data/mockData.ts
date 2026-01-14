@@ -1,4 +1,11 @@
-import { Activity, ClientFeedback, Project, Risk, User, WeeklyCheckIn } from "@/types";
+import {
+    User,
+    Project,
+    WeeklyCheckIn,
+    ClientFeedback,
+    Risk,
+    Activity,
+} from "@/types";
 
 export const mockUsers: User[] = [
     {
@@ -178,7 +185,7 @@ export const mockFeedback: ClientFeedback[] = [
 
 export const mockRisks: Risk[] = [
     {
-        id: "1",
+        _id: "1",
         projectId: "2",
         createdBy: "4",
         title: "Android Performance Issues",
@@ -191,7 +198,7 @@ export const mockRisks: Risk[] = [
         createdAt: "2024-03-19T08:00:00Z",
     },
     {
-        id: "2",
+        _id: "2",
         projectId: "3",
         createdBy: "3",
         title: "Integration Dependency",
@@ -204,7 +211,7 @@ export const mockRisks: Risk[] = [
         createdAt: "2024-03-18T14:00:00Z",
     },
     {
-        id: "3",
+        _id: "3",
         projectId: "3",
         createdBy: "4",
         title: "Data Privacy Compliance",
@@ -217,7 +224,7 @@ export const mockRisks: Risk[] = [
         createdAt: "2024-03-15T10:00:00Z",
     },
     {
-        id: "4",
+        _id: "4",
         projectId: "1",
         createdBy: "2",
         title: "Design Asset Delays",
@@ -327,5 +334,25 @@ export function getActivitiesForProject(projectId: string): Activity[] {
             (a, b) =>
                 new Date(b.timestamp).getTime() -
                 new Date(a.timestamp).getTime()
+        );
+}
+
+export function getFeedbackForProject(projectId: string): ClientFeedback[] {
+    return mockFeedback
+        .filter((f) => f.projectId === projectId)
+        .sort(
+            (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+        );
+}
+
+export function getCheckInsForProject(projectId: string): WeeklyCheckIn[] {
+    return mockCheckIns
+        .filter((c) => c.projectId === projectId)
+        .sort(
+            (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
         );
 }

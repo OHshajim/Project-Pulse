@@ -9,6 +9,8 @@ import { useUser } from "@clerk/nextjs";
 import { AddProjectDialog } from "@/components/projects/AddProject";
 import { getAllProjects } from "@/data/projectData";
 import { getUserData } from "@/data/userData";
+import { ProjectDetailsModal } from "@/components/projects/ProjectDetailsModal";
+import { Project } from "@/types";
 
 export default function Projects() {
     const { user } = useUser();
@@ -18,6 +20,8 @@ export default function Projects() {
     const [users, setUsers]= useState([]);
     const employees = users.filter((u) => u?.role === "EMPLOYEE");
     const clients = users.filter((u) => u?.role === "CLIENT");
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const [showProjectModal, setShowProjectModal] = useState(false);
 
     const loadProjects = async () => {
         const { projects } = await getAllProjects(user?.id);
@@ -119,7 +123,13 @@ export default function Projects() {
                             key={project?._id}
                             style={{ animationDelay: `${index * 50}ms` }}
                         >
-                            <ProjectCard project={project} />
+                            <ProjectCard
+                                project={project}
+                                onClick={() => {
+                                    setSelectedProject(project);
+                                    setShowProjectModal(true);
+                                }}
+                            />
                         </div>
                     ))}
                 </div>
@@ -130,6 +140,11 @@ export default function Projects() {
                     </p>
                 </div>
             )}
+            <ProjectDetailsModal
+                open={showProjectModal}
+                onOpenChange={setShowProjectModal}
+                project={selectedProject}
+            />
         </div>
     );
 }
