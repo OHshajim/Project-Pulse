@@ -9,7 +9,7 @@ import { useUser } from "@clerk/nextjs";
 import { AddProjectDialog } from "@/components/projects/AddProject";
 import { getAllProjects } from "@/data/projectData";
 import { getUserData } from "@/data/userData";
-import { ProjectDetailsModal } from "@/components/projects/ProjectDetailsModal";
+import { ProjectDetailsModal } from "@/components/projects/ProjectDetailsModal/ProjectDetailsModal";
 import { Project } from "@/types";
 
 export default function Projects() {
